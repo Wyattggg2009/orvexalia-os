@@ -51,6 +51,12 @@ async function mail(){const out=wrap("mail");if(!permitted("messenger"))return a
 function gifts(){const out=wrap("gifts"),g=group("grid");for(const [icon,title] of [["🌹","Flowers"],["💌","Love note"],["🧸","Teddy bear"],["🎁","Surprise"],["⭐","Star"],["🍫","Chocolate"]])g.append(group("market-card stack",el("div","market-glyph",icon),el("h2","",title),el("p","muted","Free virtual gift")));return add(out,g,sendForm("Send a gift (type the gift name)","🎁 Virtual gift:"))}
 const shared={...api,uid,name,now,wrap,select,save,remove,sendForm};
 const extra=window.OrvexaliaUniverseExtras?.(shared)||{handlers:{}};
-return {handlers:{life,social,capsule,virtualhome,pets,mail,gifts,...extra.handlers},cleanup:extra.cleanup||(()=>{}),appCount:Object.keys(defs).length};
+const previous={life,social,capsule,virtualhome,pets,mail,gifts,...extra.handlers};
+const context={...shared,previous};
+const world=window.OrvexaliaWorld?.(context)||{handlers:{}};
+const games=window.OrvexaliaGames?.(context)||{handlers:{}};
+const media=window.OrvexaliaExperienceMedia?.(context)||{handlers:{}};
+const desktop=window.OrvexaliaExperienceDesktop?.(context)||{handlers:{}};
+return {handlers:{...previous,...world.handlers,...games.handlers,...media.handlers,...desktop.handlers},cleanup:()=>{extra.cleanup?.();games.cleanup?.()},startNotifications:()=>desktop.start?.(),stopNotifications:()=>desktop.stop?.(),appCount:Object.keys(defs).length};
 };
 })();
